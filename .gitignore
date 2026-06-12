@@ -1,0 +1,144 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.python-version
+
+# Virtual environments and dependency managers
+.venv/
+venv/
+env/
+.uv-cache/
+.uv/
+
+# Env / secrets locaux
+.env
+.env.*
+!.env.example
+!.env.sample
+config/*.local.json
+config/settings.json
+config/mcp.json
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+
+# Test, lint, type-check caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Build and packaging outputs
+build/
+dist/
+*.egg-info/
+*.spec
+!packaging/pyinstaller/lity.spec
+*.dmg
+*.pkg
+*.msi
+*.zip
+*.manifest
+*.app/
+*.exe
+*.so
+*.dll
+*.dylib
+*.dSYM/
+
+# Local app data and generated artifacts
+data/
+cache/
+state/
+tmp/
+temp/
+voices/
+logs/
+*.log
+*.bak
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# Model weights / checkpoints
+Models/
+models/
+checkpoints/
+*.safetensors
+*.ckpt
+*.gguf
+*.pt
+*.pth
+*.bin
+*.onnx
+*.onnx.json
+
+# Generated media / local outputs
+outputs/
+output/
+screenshots/
+recordings/
+research_outputs/
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.webm
+
+# Frontend (web UI)
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/.vite/
+frontend/.turbo/
+frontend/.parcel-cache/
+*.tsbuildinfo
+src/lity/interfaces/desktop_web/web_dist/
+
+# Browser/test artifacts
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Docker/service local state
+.docker/
+docker-data/
+searxng/data/
+searxng/redis/
+searxng/cache/
+searxng/settings.yml
+
+# Local agent/runtime notes
+.codex/
+.claude/
+claude-code-runtime
+docs/superpowers/
+
+# External R&D artifacts do not belong in Lity
+research/
+tools/
+Research/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local worktrees
+.worktrees/
+worktrees/

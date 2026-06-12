@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   Design tokens — Codex-aligned: cool/true-neutral, near-monochrome, one accent.
+   Color channels are space-separated RGB so Tailwind's `<alpha-value>` works.
+   Primary actions use a near-black/near-white SOLID (the OpenAI signature);
+   the cyan accent is reserved for focus, links, active/selected states.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  /* Surfaces (cool neutral, optically spaced) */
+  --canvas: 255 255 255; /* main content background */
+  --panel: 250 250 250; /* sidebar / workspace rails */
+  --surface: 255 255 255; /* cards, composer, header, popovers (define via border) */
+  --surface-2: 244 244 245; /* subtle opaque fill: bubbles, inline code, hover */
+  --surface-3: 233 233 235; /* pressed / selected opaque */
+  --elevated: 255 255 255; /* modals / menus (+ shadow) */
+
+  /* Text — off-black, cool */
+  --text: 23 23 23;
+  --text-2: 90 90 95;
+  --text-3: 142 142 148;
+
+  /* Hairline borders (lines, not shadows, separate surfaces) */
+  --hairline: rgb(0 0 0 / 0.10);
+  --hairline-strong: rgb(0 0 0 / 0.16);
+
+  /* Accent — Lity's cyan, the single restrained pop (focus, links, active) */
+  --accent: 13 120 168;
+  --accent-hover: 11 104 146;
+  --accent-press: 9 88 124;
+  --accent-contrast: 255 255 255;
+
+  /* Solid — near-black primary fill (the OpenAI/Codex primary button) */
+  --solid: 24 24 27;
+  --solid-hover: 39 39 42;
+  --solid-contrast: 255 255 255;
+
+  /* Semantic (muted, meaning only) */
+  --success: 22 122 80;
+  --warn: 176 100 20;
+  --danger: 200 52 44;
+
+  /* Diff (GitHub-style, semantic backgrounds + markers) */
+  --diff-add-bg: rgb(34 134 58 / 0.10);
+  --diff-add: 33 110 57;
+  --diff-del-bg: rgb(207 56 50 / 0.10);
+  --diff-del: 180 47 42;
+
+  /* Layered elevation (negative spread, hue-tinted) — overlays only */
+  --shadow: 17 17 20;
+  --elev-1: 0 0 0 1px rgb(var(--shadow) / 0.04), 0 1px 2px -1px rgb(var(--shadow) / 0.10),
+    0 2px 4px -2px rgb(var(--shadow) / 0.06);
+  --elev-2: 0 0 0 1px rgb(var(--shadow) / 0.05), 0 4px 8px -2px rgb(var(--shadow) / 0.10),
+    0 8px 20px -4px rgb(var(--shadow) / 0.12);
+  --elev-3: 0 0 0 1px rgb(var(--shadow) / 0.06), 0 12px 24px -8px rgb(var(--shadow) / 0.18),
+    0 24px 48px -12px rgb(var(--shadow) / 0.22);
+
+  /* Motion — two curves */
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --canvas: 13 13 13; /* near-black, never #000 */
+  --panel: 22 22 22;
+  --surface: 30 30 30;
+  --surface-2: 33 33 33;
+  --surface-3: 43 43 43;
+  --elevated: 36 36 36;
+
+  --text: 236 236 236; /* soft white */
+  --text-2: 176 176 180;
+  --text-3: 136 136 142;
+
+  --hairline: rgb(255 255 255 / 0.10);
+  --hairline-strong: rgb(255 255 255 / 0.17);
+
+  --accent: 74 180 214;
+  --accent-hover: 98 196 226;
+  --accent-press: 60 160 194;
+  --accent-contrast: 8 30 39;
+
+  --solid: 236 236 236; /* near-white primary in dark */
+  --solid-hover: 255 255 255;
+  --solid-contrast: 18 18 20;
+
+  --success: 62 182 122;
+  --warn: 222 150 60;
+  --danger: 240 110 100;
+
+  --diff-add-bg: rgb(63 185 80 / 0.14);
+  --diff-add: 126 231 135;
+  --diff-del-bg: rgb(248 81 73 / 0.14);
+  --diff-del: 255 138 128;
+
+  /* Dark elevation = lighter surface + 1px top inner-highlight + crisp edge */
+  --elev-1: inset 0 1px 0 0 rgb(255 255 255 / 0.04), 0 0 0 1px rgb(0 0 0 / 0.35),
+    0 1px 2px 0 rgb(0 0 0 / 0.30);
+  --elev-2: inset 0 1px 0 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.40),
+    0 8px 24px -6px rgb(0 0 0 / 0.50);
+  --elev-3: inset 0 1px 0 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.45),
+    0 20px 40px -12px rgb(0 0 0 / 0.62);
+}
+
+/* ============================================================================
+   Base
+   ========================================================================== */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: rgb(var(--canvas));
+  color: rgb(var(--text));
+  font-family: theme('fontFamily.sans');
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Inter/letterform refinements (harmless if the face lacks them) */
+  font-feature-settings: 'cv01' 1, 'cv03' 1, 'ss03' 1;
+}
+
+::selection {
+  background: rgb(var(--accent) / 0.20);
+}
+
+/* Keyboard-focus fallback for elements that DON'T define their own focus style.
+   Lives in @layer base so any `outline-none` (utilities layer) overrides it —
+   otherwise it stacks on top of a component's own focus ring (the nested-frame
+   "hover dans le hover" effect in text fields). */
+@layer base {
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent) / 0.75);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+}
+
+/* ============================================================================
+   Scrollbars — thin, recede until hovered.
+   ========================================================================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--text-3) / 0.4) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--text-3) / 0.35);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--text-3) / 0.55);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ============================================================================
+   Utilities
+   ========================================================================== */
+@layer utilities {
+  /* Tabular figures for anything that updates (counts, tok/s, sizes, timers) */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1, 'cv01' 1;
+  }
+  /* Reading measure for prose */
+  .measure {
+    max-width: 70ch;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer components {
+  /* Elevation classes (so components read as `shadow-e2` etc. via @apply targets) */
+  .elev-1 {
+    box-shadow: var(--elev-1);
+  }
+  .elev-2 {
+    box-shadow: var(--elev-2);
+  }
+  .elev-3 {
+    box-shadow: var(--elev-3);
+  }
+  /* Apple "Materials": one vibrancy surface (command palette). */
+  .material {
+    background: rgb(var(--elevated) / 0.80);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+}
+
+/* ============================================================================
+   Motion preference
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

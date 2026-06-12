@@ -1,0 +1,154 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lity"
+version = "0.1.0"
+description = "Local-first AI workspace with a modern cross-platform desktop UI."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Lity contributors" }]
+dependencies = [
+    "ollama>=0.4",
+    "platformdirs>=4.3",
+    # MCP client SDK ships by default so configured local MCP servers activate
+    # automatically instead of logging a missing optional dependency.
+    "mcp>=1.0",
+    # Voice (STT/TTS) ships by default so dictation + read-aloud work out of the
+    # box. These are still imported lazily and guarded, so the app degrades
+    # gracefully if a binary wheel (e.g. PortAudio) is unavailable on a host.
+    "faster-whisper>=1.1",
+    "numpy>=1.26",
+    "piper-tts>=1.3",
+    "sounddevice>=0.5",
+    # Local RAG reranker (cross-encoder via ONNX Runtime — no torch, no API key).
+    # Ships by default so hybrid retrieval is reranked out of the box; the model
+    # loads lazily on first RAG use and degrades to RRF ordering if unavailable.
+    "fastembed>=0.4",
+    # Web research quality, default so it works out of the box (web search is a
+    # first-class feature with one-click SearXNG): httpx = robust fetch,
+    # trafilatura = readable extraction (the crude HTML strip yields boilerplate
+    # on modern sites), ddgs = keyless DuckDuckGo search. All free, no API key;
+    # every one degrades gracefully if a wheel is unavailable on a host.
+    "httpx>=0.27",
+    "trafilatura>=1.12",
+    "ddgs>=6.0",
+]
+
+[project.urls]
+Repository = "https://github.com/lansbe/lity-local"
+Issues = "https://github.com/lansbe/lity-local/issues"
+
+[project.optional-dependencies]
+desktop = [
+    "PySide6-Essentials>=6.8",
+]
+web = [
+    "pywebview>=5.3",
+]
+image = [
+    "Pillow>=10.4",
+    # In-process, server-less image generation: load a downloaded .safetensors
+    # checkpoint with diffusers and render on the local GPU (Metal/CUDA/CPU) —
+    # no external Stable Diffusion WebUI. torch is heavy (~2-3 GB), so the app
+    # installs this set on first use of image mode; listing it here lets
+    # `pip install .[image]` prefetch it and documents the requirement.
+    "torch>=2.2",
+    "diffusers>=0.27",
+    # <5: diffusers' single-file CLIP loader uses transformers internals
+    # (model.text_model) that transformers 5.x removed.
+    "transformers>=4.40,<5",
+    "accelerate>=0.30",
+    "safetensors>=0.4",
+]
+image-mlx = [
+    # Apple-Silicon-only MLX image generation via mflux (FLUX.1/FLUX.2/Z-Image).
+    # Rendered out-of-process by the MLX engine; installed on first use of an
+    # mlx-backed model, like [image]. The platform marker makes it a no-op off
+    # arm64 macOS (mlx has no wheels elsewhere).
+    "mflux>=0.18 ; platform_system == 'Darwin' and platform_machine == 'arm64'",
+]
+video = [
+    # In-process, server-less video generation: load a downloaded diffusers
+    # video model (Wan 2.x) and render a short clip on the local GPU, exported
+    # to MP4 via imageio/ffmpeg — no external server. Shares torch/transformers/
+    # accelerate with the [image] extra; diffusers is bumped to the version that
+    # ships WanPipeline. Installed on first use of video mode, like [image].
+    "torch>=2.2",
+    "diffusers>=0.32",
+    "transformers>=4.40,<5",
+    "accelerate>=0.30",
+    "safetensors>=0.4",
+    "imageio>=2.34",
+    "imageio-ffmpeg>=0.5",
+    "ftfy>=6.1",
+    "Pillow>=10.4",
+]
+documents = [
+    # Real text extraction from PDF/DOCX attachments. Degrades to plain text.
+    "pypdf>=5.0",
+    "python-docx>=1.1",
+]
+mcp = [
+    # MCP ships in the base dependencies so configured local servers activate
+    # automatically; this extra keeps install profiles explicit.
+    "mcp>=1.0",
+]
+dev = [
+    "pytest>=8.3",
+    "pypdf>=5.0",
+    "python-docx>=1.1",
+    "ruff>=0.8",
+]
+packaging = [
+    "pyinstaller>=6.11",
+]
+full = [
+    # Audio + RAG-reranker + MCP deps are in the base dependencies now, so they
+    # are omitted here.
+    "PySide6-Essentials>=6.8",
+    "pywebview>=5.3",
+    "Pillow>=10.4",
+    "pyinstaller>=6.11",
+    "mcp>=1.0",
+]
+
+[project.scripts]
+lity = "lity.app.main:main"
+
+[tool.uv]
+conflicts = [
+    [
+        { extra = "image" },
+        { extra = "image-mlx" },
+    ],
+    [
+        { extra = "image-mlx" },
+        { extra = "video" },
+    ],
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lity"]
+
+[tool.pytest.ini_options]
+# Disable pytest-qt: no test uses the qtbot fixture, and the plugin aborts
+# collection when no Qt binding is installed (the Qt tests self-skip instead).
+addopts = "-q -p no:pytest-qt"
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
