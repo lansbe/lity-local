@@ -61,7 +61,7 @@ def run_desktop_web(paths: AppPaths, dev: bool = False) -> int:
     )
     window_holder["window"] = window
     window.events.closed += controller.shutdown
-    webview.start(debug=dev)
+    webview.start(debug=False)
     return 0
 
 
